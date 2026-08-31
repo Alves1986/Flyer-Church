@@ -246,6 +246,9 @@ export function ensureSchema(): Promise<void> {
       await sql`alter table flyers_gerados add column if not exists avaliacao smallint;`;
       await sql`alter table flyers_gerados add column if not exists motivo_rejeicao text;`;
       await sql`alter table brand_dna add column if not exists organization_id uuid references organizations(id) on delete cascade unique;`;
+      await sql`alter table organizations add column if not exists plan text not null default 'free';`;
+      await sql`alter table organizations add column if not exists paddle_customer_id text;`;
+      await sql`alter table organizations add column if not exists paddle_subscription_id text;`;
     })();
   }
   return schemaReady;

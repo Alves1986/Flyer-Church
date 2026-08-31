@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRequestOrgId, getRequestUserId } from "@/lib/auth";
+import { requireCredits } from "@/lib/billing";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -11,12 +13,9 @@ interface ReferenceImage {
 interface GenerateBody {
   prompt: string;
   images: ReferenceImage[];
+  templateId?: string;
 }
 
-// Modelo padrão: Gemini 2.5 Flash Image ("nano banana"), bom custo-benefício
-// para compor pessoa + logo + estilo a partir de múltiplas imagens de referência.
-// Troque o model abaixo se preferir outro provedor (Flux.2 Pro, GPT Image etc.) —
-// ajuste também o parsing da resposta, que varia por provedor.
 const MODEL = "gemini-2.5-flash-image";
 
 export async function POST(req: NextRequest) {
@@ -31,6 +30,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const orgId = await getRequestOrgId();
+  const userId = await getRequestUserId();
+
+  if (!orgId || !userId) {
+    return NextResponse.json(
+      { error: "Não autenticado. Faça login para gerar flyers." },
+      { status: 401 }
+    );
+  }
+
   let body: GenerateBody;
   try {
     body = await req.json();
@@ -40,6 +49,22 @@ export async function POST(req: NextRequest) {
 
   if (!body.prompt) {
     return NextResponse.json({ error: "Envie o prompt final." }, { status: 400 });
+  }
+
+  try {
+    await requireCredits(orgId, userId, "generation", { templateId: body.templateId });
+  } catch (err: any) {
+    if (err.statusCode === 402) {
+      return NextResponse.json(
+        {
+          error: err.message,
+          code: "INSUFFICIENT_CREDITS",
+          balance: err.balance,
+        },
+        { status: 402 }
+      );
+    }
+    throw err;
   }
 
   const imageParts = (body.images ?? []).map((img) => ({
@@ -66,11 +91,6 @@ export async function POST(req: NextRequest) {
     if (!response.ok) {
       const detail = await response.text();
 
-      // A partir de 2026 a Google não libera cota gratuita para o
-      // gemini-2.5-flash-image: contas sem faturamento (billing) habilitado
-      // recebem 429 RESOURCE_EXHAUSTED com limit: 0 mesmo com a chave válida.
-      // Detectamos esse caso para dar uma mensagem acionável em vez do JSON
-      // cru da Google.
       const semCotaGratuita =
         response.status === 429 &&
         (detail.includes("RESOURCE_EXHAUSTED") || detail.includes("free_tier"));
