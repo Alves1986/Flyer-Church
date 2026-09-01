@@ -320,3 +320,17 @@ export async function saveBrandDna(brandDna: BrandDna): Promise<void> {
   }
   saveBrandDnaLocal(brandDna);
 }
+
+export async function getCreditBalance(): Promise<{
+  creditsRemaining: number;
+  creditsMonthly: number;
+  planName: string;
+  resetDate: string;
+} | null> {
+  try {
+    const res = await fetch("/api/billing/balance", { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch {
+  }
+  return null;
+}
