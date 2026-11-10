@@ -1,10 +1,10 @@
-# FlyerForge — Guia de Trabalho para Assistentes
+# Flyer Church — Guia de Trabalho para Assistentes
 
-Leia este documento inteiro antes de alterar código. Preserve a arquitetura local-first, a degradação graciosa e a identidade visual premium do FlyerForge.
+Leia este documento inteiro antes de alterar código. Preserve a arquitetura local-first, a degradação graciosa e a identidade visual premium do Flyer Church.
 
 ## Produto
 
-O FlyerForge é um app Next.js que transforma um flyer de referência em um template reutilizável. Uma IA analisa estilo, paleta, layout, tipografia e direção de arte; depois o usuário cria novos flyers alterando dados variáveis, como evento, igreja, preletor, data, versículo, foto e logo.
+O Flyer Church é um app Next.js que transforma um flyer de referência em um template reutilizável. Uma IA analisa estilo, paleta, layout, tipografia e direção de arte; depois o usuário cria novos flyers alterando dados variáveis, como evento, igreja, preletor, data, versículo, foto e logo.
 
 O objetivo não é criar um editor gráfico genérico. O objetivo é permitir que igrejas comuniquem seus cultos e eventos com identidade visual consistente, clareza e qualidade.
 

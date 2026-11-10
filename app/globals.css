@@ -3,15 +3,54 @@
 @tailwind utilities;
 
 @layer base {
+  /* ================================================================
+     Brand tokens — single source of truth (espelha brand-spec.md)
+     ================================================================ */
+  :root {
+    /* Tema aplicativo (dashboard, configuração, geração) — escuro obsidian */
+    --bg: #0B0A08;
+    --surface: #12100C;
+    --fg: #F5F0E4;
+    --muted: #A69C87;
+    --border: #2A2418;
+    --accent: #B8860B;
+    --accent-soft: oklch(0.70 0.16 75);
+    --accent-strong: oklch(0.55 0.18 72);
+    --danger: oklch(0.65 0.18 25);
+    --success: oklch(0.70 0.16 145);
+    /* Tema landing (marketing) — claro papel */
+    --landing-bg: #FCFCFA;
+    --landing-surface: #F7F5F0;
+    --landing-fg: #0A0A0A;
+    --landing-muted: #6B604E;
+    --landing-border: #EAE7E0;
+    --landing-accent: #B8860B;
+  }
+
   html {
     color-scheme: dark;
   }
   body {
-    background-color: #0B0A08;
-    color: #F5F0E4;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background-color: rgba(187, 158, 73, 0.35);
+    background-color: rgba(184, 134, 11, 0.35);
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.22 0.05 70);
   }
 }
 
@@ -27,7 +66,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.05;
+    opacity: 0.035;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
@@ -40,4 +79,20 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+.theme-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg);
 }

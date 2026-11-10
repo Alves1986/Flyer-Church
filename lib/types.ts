@@ -114,6 +114,8 @@ export interface AssetBiblioteca {
   base64?: string;
   /** URL no Vercel Blob, quando o upload é persistido (ver lib/blob.ts). */
   url?: string;
+  /** Marca se este logo é o oficial da igreja (apenas para tipo "logo"). */
+  oficial?: boolean;
 }
 
 export interface GeneratedFlyer {

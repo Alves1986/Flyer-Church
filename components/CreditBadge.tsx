@@ -14,6 +14,16 @@ interface CreditBadgeProps {
   };
 }
 
+const INK = "#0B0A08";
+const SURFACE = "#12100C";
+const FG = "#F5F0E4";
+const MUTED = "#A69C87";
+const BORDER = "#2A2418";
+const GOLD = "#B8860B";
+const GOLD_DARK = "#9A6B08";
+const ORANGE = "#EA580C";
+const GREEN = "#16A34A";
+
 export default function CreditBadge({ initialBalance }: CreditBadgeProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -49,16 +59,19 @@ export default function CreditBadge({ initialBalance }: CreditBadgeProps) {
   const isEmpty = balance.creditsRemaining === 0;
   const percentage = Math.max(0, (balance.creditsRemaining / balance.creditsMonthly) * 100);
 
+  const iconColor = isEmpty ? "#DC2626" : isLow ? ORANGE : GOLD;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink-900/80 border border-gold-500/20"
+      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[INK]/80 border-2 border-[GOLD]/20"
     >
+      {/* Barra de progresso */}
       <div className="relative hidden sm:block">
-        <div className="h-2 w-24 rounded-full bg-ink-950 border border-gold-500/10 overflow-hidden">
+        <div className="h-2 w-24 rounded-full bg-[INK] border-2 border-[GOLD]/10 overflow-hidden">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300"
+            className="h-full rounded-full bg-gradient-to-r from-[GOLD] to-[#DCC177]"
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -67,24 +80,24 @@ export default function CreditBadge({ initialBalance }: CreditBadgeProps) {
       </div>
 
       <div className="flex items-center gap-1.5">
-        <CreditCard className={`h-4 w-4 ${isEmpty ? "text-red-400" : isLow ? "text-amber-400" : "text-gold-400"}`} />
+        <CreditCard className={`h-4 w-4`} style={{ color: iconColor }} />
 
-        <span className="text-xs font-medium text-parchment-100">
+        <span className="text-xs font-medium text-[FG]">
           {balance.creditsRemaining}/{balance.creditsMonthly}
         </span>
 
         {isLow && (
-          <AlertTriangle className="h-3 w-3 text-amber-400 animate-pulse" />
+          <AlertTriangle className="h-3 w-3 animate-pulse" style={{ color: ORANGE }} />
         )}
 
-        <span className="text-[10px] text-parchment-500 hidden md:block">
+        <span className="text-[10px] text-[MUTED] hidden md:block">
           {balance.planName}
         </span>
       </div>
 
       <button
         onClick={() => router.push("/configuracao/plano")}
-        className="ml-1 p-1 rounded-lg text-parchment-400 hover:text-gold-300 hover:bg-gold-500/10 transition-colors"
+        className="ml-1 p-1 rounded-lg text-[MUTED] hover:text-[GOLD_DARK] hover:bg-[GOLD]/10 transition-colors"
         title="Gerenciar plano"
       >
         <ExternalLink className="h-3.5 w-3.5" />

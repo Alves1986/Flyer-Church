@@ -1,8 +1,8 @@
-# Roadmap de Produto — FlyerForge
+# Roadmap de Produto — Flyer Church
 
 ## Norte
 
-O FlyerForge deve se tornar o sistema de criação visual para igrejas: uma plataforma que preserva identidade, reduz trabalho repetitivo e torna a comunicação de eventos mais clara e digna da mensagem comunicada.
+O Flyer Church deve se tornar o sistema de criação visual para igrejas: uma plataforma que preserva identidade, reduz trabalho repetitivo e torna a comunicação de eventos mais clara e digna da mensagem comunicada.
 
 O diferencial não é apenas gerar imagens. É converter referências aprovadas em uma memória visual reutilizável por cada igreja.
 

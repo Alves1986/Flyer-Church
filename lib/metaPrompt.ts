@@ -27,7 +27,30 @@ Siga estas diretrizes estritas para construir o prompt de saída:
    - nome/título do evento (texto de destaque, geralmente grande, tipográfico, no fundo ou centro da peça) → [NOME_EVENTO]
    - versículo ou frase → [FRASE_BIBLICA]
 
-Saída esperada: um único parágrafo longo e descritivo em português, formatado como um prompt de criação pronto para uso em um modelo de geração de imagem multimodal, contendo todas as variáveis acima entre colchetes, exatamente como especificado.`;
+5. Posições de Texto (textPositions) — para CADA variável de texto detectada, estime sua posição, tamanho, fonte e cor na imagem de referência (assumindo canvas 1080x1350 feed). Retorne coordenadas em pixels, fonte (nome padrão: Inter, Playfair Display, Montserrat, etc.), tamanho em px, cor em hex, alinhamento e line-height.
+
+SAÍDA ESPERADA: Um objeto JSON válido (sem markdown, sem texto extra) com exatamente dois campos:
+{
+  "prompt": "prompt de criação longo e descritivo em português...",
+  "textPositions": [
+    {
+      "variable": "NOME_EVENTO",
+      "x": 540, "y": 200, "maxWidth": 900,
+      "fontFamily": "Playfair Display", "fontSize": 72,
+      "color": "#BB9E49", "align": "center", "lineHeight": 1.1
+    },
+    {
+      "variable": "DATA_EVENTO",
+      "x": 540, "y": 320, "maxWidth": 600,
+      "fontFamily": "Inter", "fontSize": 28,
+      "color": "#F5F0E4", "align": "center", "lineHeight": 1.3
+    }
+  ]
+}
+
+Coordenadas (x,y) em pixels relativos à imagem 1080x1350 (feed).
+Cores em hex. Fontes: use nomes padrão (Playfair Display, Inter, Montserrat, etc.).
+Se não conseguir estimar posição exata, use layout padrão centralizado.`;
 
 /** Rótulos amigáveis para exibir no formulário de preenchimento. */
 export const ROTULOS_VARIAVEIS: Record<string, string> = {

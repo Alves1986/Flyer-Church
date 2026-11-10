@@ -4,6 +4,12 @@ import { useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ImagePlus, X } from "lucide-react";
 
+const INK = "#0B0A08";
+const SURFACE = "#12100C";
+const BORDER = "#2A2418";
+const GOLD = "#B8860B";
+const GOLD_DARK = "#9A6B08";
+
 interface UploadDropzoneProps {
   label: string;
   hint?: string;
@@ -47,12 +53,14 @@ export default function UploadDropzone({
       const { base64, mimeType } = await fileToBase64(file);
       onChange({ previewUrl: URL.createObjectURL(file), base64, mimeType });
     },
-    [onChange]
+    [onChange],
   );
+
+  const aspectRatioClass = aspectClass[aspect] || "aspect-[16/9]";
 
   return (
     <div>
-      <p className="mb-2 text-sm font-medium text-parchment-100">{label}</p>
+      <p className="mb-2 text-sm font-medium text-[FG]">{label}</p>
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -65,9 +73,11 @@ export default function UploadDropzone({
           void handleFile(e.dataTransfer.files?.[0]);
         }}
         onClick={() => !value && inputRef.current?.click()}
-        className={`relative overflow-hidden rounded-2xl border transition-all duration-200 ${aspectClass[aspect]} ${
-          value ? "border-gold-500/30" : "cursor-pointer border-dashed border-gold-500/25 hover:border-gold-400/50 hover:bg-gold-500/[0.03]"
-        } ${dragging ? "border-gold-400 bg-gold-500/[0.06] shadow-glow" : ""}`}
+        className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-200 ${aspectRatioClass} ${
+          value
+            ? "border-[GOLD]/30 bg-[SURFACE]"
+            : "cursor-pointer border-dashed border-[GOLD]/25 hover:border-[GOLD]/50 hover:bg-[GOLD]/3"
+        } ${dragging ? "border-[GOLD_DARK] bg-[GOLD]/6 shadow-[0_0_20px_rgba(184,134,11,0.2)]" : ""}`}
       >
         <input
           ref={inputRef}
@@ -93,15 +103,15 @@ export default function UploadDropzone({
                 e.stopPropagation();
                 onChange(null);
               }}
-              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink-950/80 text-parchment-100 ring-1 ring-gold-500/30 backdrop-blur-sm"
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[INK]/80 text-[FG] ring-1 ring-[GOLD]/30 backdrop-blur-sm"
             >
               <X size={14} />
             </motion.button>
           </>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center">
-            <ImagePlus className="text-gold-400/70" size={22} />
-            <p className="text-xs text-parchment-500">
+            <ImagePlus className="text-[GOLD]/70" size={22} />
+            <p className="text-xs text-[MUTED]">
               {hint ?? "Arraste uma imagem ou clique para enviar"}
             </p>
           </div>

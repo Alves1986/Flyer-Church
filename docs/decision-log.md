@@ -1,4 +1,4 @@
-# Decision Log — FlyerForge
+# Decision Log — Flyer Church
 
 Registre aqui decisões de produto e arquitetura que não devem ser rediscutidas a cada alteração.
 

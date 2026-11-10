@@ -108,7 +108,7 @@ export async function callOpenRouterVision(
       authorization: `Bearer ${apiKey}`,
       // recomendado pela OpenRouter para identificar a app nos limites de uso
       "http-referer": process.env.NEXT_PUBLIC_SITE_URL ?? "https://flyerchurch.vercel.app",
-      "x-title": "FlyerForge",
+      "x-title": "Flyer Church",
     },
     body: JSON.stringify({
       model,
@@ -167,7 +167,7 @@ export async function callOpenRouterChat(
       "content-type": "application/json",
       authorization: `Bearer ${apiKey}`,
       "http-referer": process.env.NEXT_PUBLIC_SITE_URL ?? "https://flyerchurch.vercel.app",
-      "x-title": "FlyerForge",
+      "x-title": "Flyer Church",
     },
     body: JSON.stringify({
       model,

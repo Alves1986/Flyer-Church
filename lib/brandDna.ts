@@ -1,12 +1,83 @@
-import { BrandDna } from "./types";
+import { BrandDna, CategoriaEvento } from "./types";
 
 /**
- * Perfil visual estruturado por igreja (Fase 2 — docs/brand-dna.md).
- * Este arquivo concentra: um Brand DNA vazio (para inicializar o formulário),
- * a mesclagem de uma proposta parcial da IA sobre o vazio, e a aplicação do
- * Brand DNA aprovado ao prompt final de geração — de forma puramente aditiva,
- * sem alterar o contrato de variáveis existente (lib/promptMerge.ts).
+ * Categorias de evento padrão.
  */
+export const CATEGORIAS_EVENTO: { id: CategoriaEvento; label: string; descricao: string }[] = [
+  { id: "culto", label: "Culto semanal", descricao: "Cultos dominicais e de meio de semana" },
+  { id: "jovens", label: "Jovens", descricao: "Encontros, retiros e eventos da juventude" },
+  { id: "ceia", label: "Ceia", descricao: "Celebração da Santa Ceia" },
+  { id: "conferencia", label: "Conferência", descricao: "Congressos, conferências e eventos especiais" },
+  { id: "vigilia", label: "Vigília", descricao: "Vigílias de oração e madrugadas" },
+  { id: "aviso", label: "Aviso geral", descricao: "Comunicados, avisos e informativos" },
+];
+
+/**
+ * Retorna o label amigável de uma categoria.
+ */
+export function labelCategoriaEvento(id: CategoriaEvento): string {
+  return CATEGORIAS_EVENTO.find((c) => c.id === id)?.label ?? id;
+}
+
+/**
+ * Deep merge de dois objetos BrandDna parciais.
+ * O override vazio (undefined/null) mantém o valor base.
+ * Arrays: override substitui completamente (não concatena).
+ * Objetos aninhados: merge recursivo.
+ */
+export function mergeBrandDnaOverride(
+  base: Partial<BrandDna>,
+  override: Partial<BrandDna>
+): Partial<BrandDna> {
+  const result: Record<string, any> = { ...base };
+
+  for (const key of Object.keys(override) as Array<keyof Partial<BrandDna>>) {
+    const overrideValue = override[key];
+    const baseValue = base[key];
+
+    if (overrideValue === undefined || overrideValue === null) {
+      continue;
+    }
+
+    // Skip empty arrays in override (treat as "no override")
+    if (Array.isArray(overrideValue) && overrideValue.length === 0) {
+      continue;
+    }
+
+    if (Array.isArray(overrideValue) && Array.isArray(baseValue)) {
+      result[key] = overrideValue;
+    } else if (
+      typeof overrideValue === "object" &&
+      overrideValue !== null &&
+      typeof baseValue === "object" &&
+      baseValue !== null
+    ) {
+      result[key] = mergeBrandDnaOverride(
+        baseValue as Record<string, any>,
+        overrideValue as Record<string, any>
+      );
+    } else {
+      result[key] = overrideValue;
+    }
+  }
+
+  return result as Partial<BrandDna>;
+}
+
+/**
+ * Aplica os overrides de uma categoria ao Brand DNA base,
+ * retornando o Brand DNA efetivo para essa categoria.
+ */
+export function aplicarEventOverride(
+  brandDna: BrandDna,
+  categoria: CategoriaEvento
+): BrandDna {
+  const override = brandDna.eventOverrides?.[categoria];
+  if (!override || Object.keys(override).length === 0) {
+    return brandDna;
+  }
+  return mergeBrandDnaOverride(brandDna, override) as BrandDna;
+}
 
 export function brandDnaVazio(): BrandDna {
   return {

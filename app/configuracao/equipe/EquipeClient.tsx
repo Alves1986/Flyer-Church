@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Mail, UserCheck, UserX, Shield, Edit, Trash2, Loader2, Check, X, ChevronDown, Send, MoreVertical, Clock } from "lucide-react";
+import {
+  Plus, Mail, UserCheck, UserX, Shield, Edit, Trash2,
+  Loader2, Check, X, ChevronDown, Send, MoreVertical, Clock
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type Member = {
@@ -26,6 +29,14 @@ const ROLE_LABELS: Record<Member["role"], string> = {
 };
 
 const ROLE_HIERARCHY: Member["role"][] = ["owner", "admin", "designer", "editor", "viewer"];
+
+const INK = "#0B0A08";
+const SURFACE = "#12100C";
+const FG = "#F5F0E4";
+const MUTED = "#A69C87";
+const BORDER = "#2A2418";
+const GOLD = "#B8860B";
+const GOLD_DARK = "#9A6B08";
 
 interface EquipeClientProps {
   initialOrg: {
@@ -153,7 +164,7 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center text-parchment-400"
+          className="text-center text-[MUTED]"
         >
           Carregando...
         </motion.div>
@@ -161,31 +172,43 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
     );
   }
 
+  function MemberAvatar({ firstName, lastName, email }: { firstName: string | null; lastName: string | null; email: string }) {
+    const initials = [firstName, lastName].filter(Boolean).map((s) => s?.[0]).join("").toUpperCase() || email[0].toUpperCase();
+    return (
+      <div className="h-10 w-10 rounded-full bg-[#B8860B]/20 border-2 border-[BORDER] flex items-center justify-center text-[10px] font-black text-[GOLD_DARK]">
+        {initials}
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl py-8 px-4">
       <div className="mb-8">
-        <h1 className="font-display text-3xl tracking-wide text-parchment-100">Equipe</h1>
-        <p className="mt-2 text-parchment-500">Gerencie membros e permissões da {org.name}</p>
+        <h1 className="font-display text-3xl tracking-wide text-[FG]">Equipe</h1>
+        <p className="mt-2 text-[MUTED]">
+          Gerencie membros e permissões da {org.name}
+        </p>
       </div>
 
+      {/* Invite form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-gold-500/15 bg-ink-900/60 p-6"
+        className="rounded-2xl border-2 border-[BORDER] bg-[SURFACE]/60 p-6"
       >
-        <h2 className="mb-4 font-display text-xl text-parchment-100">Convidar novo membro</h2>
+        <h2 className="mb-4 font-display text-xl text-[FG]">Convidar novo membro</h2>
         <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-3">
           <input
             value={newMemberEmail}
             onChange={(e) => setNewMemberEmail(e.target.value)}
             placeholder="email@exemplo.com"
             type="email"
-            className="flex-1 rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+            className="flex-1 rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors placeholder:text-[MUTED]/60 focus:border-[#B8860B]/50"
           />
           <select
             value={newMemberRole}
             onChange={(e) => setNewMemberRole(e.target.value as Member["role"])}
-            className="w-full sm:w-48 rounded-xl border border-gold-500/15 bg-ink-900/70 px-3 py-3 text-sm text-parchment-100 outline-none transition-colors focus:border-gold-400/50"
+            className="w-full sm:w-48 rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-3 py-3 text-sm text-[FG] outline-none transition-colors focus:border-[#B8860B]/50"
           >
             <option value="designer">Designer</option>
             <option value="editor">Editor</option>
@@ -196,7 +219,7 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
             disabled={inviting || !newMemberEmail.trim() || !newMemberEmail.includes("@")}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-700 px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[GOLD] px-6 py-3 text-sm font-bold text-[INK] shadow-[0_0_20px_rgba(184,134,11,0.2)] disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#DCC177] transition-all"
           >
             {inviting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
             Convidar
@@ -204,44 +227,47 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
         </form>
       </motion.div>
 
+      {/* Members list */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mt-6 rounded-2xl border border-gold-500/15 bg-ink-900/60 overflow-hidden"
+        className="mt-6 rounded-2xl border-2 border-[BORDER] bg-[SURFACE]/60 overflow-hidden"
       >
         {loading ? (
           <div className="p-6 space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 animate-pulse rounded-xl bg-ink-900/50 border border-gold-500/10" />
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-[BORDER] border-2 border-[BORDER]" />
             ))}
           </div>
         ) : (
-          <div className="divide-y divide-gold-500/10">
+          <div className="divide-y-2 divide-[BORDER]">
             {members.map((member) => (
               <motion.div
                 key={member.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center justify-between px-6 py-4 hover:bg-gold-500/5 transition-colors"
+                className="flex items-center justify-between px-6 py-4 hover:bg-[GOLD]/5 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <img
-                    src={member.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.firstName || member.email)}&background=1a1a2e&color=bb9e49`}
-                    alt={member.firstName || member.email}
-                    className="h-10 w-10 rounded-full bg-ink-900"
+                  <MemberAvatar
+                    firstName={member.firstName}
+                    lastName={member.lastName}
+                    email={member.email}
                   />
                   <div>
-                    <p className="font-medium text-parchment-100">
-                      {member.firstName || member.lastName ? `${member.firstName ?? ""} ${member.lastName ?? ""}`.trim() : member.email}
+                    <p className="font-medium text-[FG]">
+                      {member.firstName || member.lastName
+                        ? `${member.firstName ?? ""} ${member.lastName ?? ""}`.trim()
+                        : member.email}
                     </p>
-                    <p className="text-sm text-parchment-500">{member.email}</p>
+                    <p className="text-sm text-[MUTED]">{member.email}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                           member.status === "pending"
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                            : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            ? "bg-[#EA580C]/10 text-[#FB923C] border-2 border-[#EA580C]/20"
+                            : "bg-[#16A34A]/10 text-[#4ADE80] border-2 border-[#16A34A]/20"
                         }`}
                       >
                         {member.status === "pending" ? (
@@ -256,11 +282,11 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
                           </>
                         )}
                       </span>
-                      <span className="rounded-full border px-2 py-0.5 text-[10px] font-medium text-parchment-400 border-gold-500/20 bg-gold-500/5">
+                      <span className="rounded-full border-2 px-2 py-0.5 text-[10px] font-medium text-[FG] border-[BORDER] bg-[GOLD]/5">
                         {ROLE_LABELS[member.role]}
                       </span>
                       {member.role === "owner" && (
-                        <Shield className="h-3.5 w-3.5 text-gold-400" aria-label="Proprietário" />
+                        <Shield className="h-3.5 w-3.5 text-[GOLD]" aria-label="Proprietário" />
                       )}
                     </div>
                   </div>
@@ -271,7 +297,7 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
                     <button
                       onClick={() => handleRoleChange(member.id, member.role)}
                       disabled={!canManage(currentUserRole, member.role) || member.userId === currentUserId}
-                      className="p-2 rounded-lg text-parchment-400 hover:text-gold-300 hover:bg-gold-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="p-2 rounded-lg text-[MUTED] hover:text-[GOLD_DARK] hover:bg-[GOLD]/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                       title="Reenviar convite"
                     >
                       <Send className="h-4 w-4" />
@@ -281,7 +307,7 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
                   <div className="relative">
                     <button
                       onClick={() => setRoleMenuOpen(roleMenuOpen === member.id ? null : member.id)}
-                      className="p-2 rounded-lg text-parchment-400 hover:text-parchment-100 hover:bg-gold-500/10 transition-colors"
+                      className="p-2 rounded-lg text-[MUTED] hover:text-[FG] hover:bg-[GOLD]/10 transition-colors"
                     >
                       <MoreVertical className="h-4 w-4" />
                     </button>
@@ -291,23 +317,25 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="absolute right-0 mt-1 w-40 rounded-xl border border-gold-500/15 bg-ink-900/95 py-1 shadow-xl z-10"
+                        className="absolute right-0 mt-1 w-40 rounded-xl border-2 border-[BORDER] bg-[SURFACE] py-1 shadow-[0_20px_50px_-12px_#B8860B/10] z-10"
                       >
                         {ROLE_HIERARCHY.filter((r) => canManage(currentUserRole, r) && r !== member.role).map((r) => (
                           <button
                             key={r}
                             onClick={() => handleRoleChange(member.id, r)}
-                            className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-parchment-300 hover:bg-gold-500/10 hover:text-gold-200 ${editRole === r ? "bg-gold-500/10 text-gold-300" : ""}`}
+                            className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-[FG] hover:bg-[GOLD]/5 hover:text-[GOLD_DARK] ${
+                              editRole === r ? "bg-[GOLD]/10 text-[GOLD_DARK]" : ""
+                            }`}
                           >
                             {editRole === r && <Check className="h-4 w-4" />}
                             {ROLE_LABELS[r]}
                           </button>
                         ))}
-                        <hr className="my-1 border-gold-500/10" />
+                        <hr className="my-1 border-[BORDER]" />
                         {canManage(currentUserRole, member.role) && member.userId !== currentUserId && (
                           <button
                             onClick={() => handleRemove(member.id)}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#DC2626] hover:bg-[#DC2626]/10"
                           >
                             <Trash2 className="h-4 w-4" />
                             Remover
@@ -321,7 +349,7 @@ export default function EquipeClient({ initialOrg, initialUser }: EquipeClientPr
             ))}
 
             {members.length === 0 && (
-              <div className="p-8 text-center text-parchment-500">
+              <div className="p-8 text-center text-[MUTED]">
                 Nenhum membro além de você. Convide sua equipe acima!
               </div>
             )}

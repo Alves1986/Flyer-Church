@@ -18,6 +18,14 @@ type Provider = "openrouter" | "anthropic";
 const CHAVE_OPENROUTER_LOCAL = "flyerforge.openrouterKey";
 const CHAVE_ANTHROPIC_LOCAL = "flyerforge.anthropicKey";
 
+const INK = "#0B0A08";
+const SURFACE = "#12100C";
+const FG = "#F5F0E4";
+const MUTED = "#A69C87";
+const BORDER = "#2A2418";
+const GOLD = "#B8860B";
+const GOLD_DARK = "#9A6B08";
+
 export default function NovoTemplatePage() {
   const router = useRouter();
   const [referencia, setReferencia] = useState<ImgValue>(null);
@@ -42,10 +50,6 @@ export default function NovoTemplatePage() {
       .catch(() => {});
   }, []);
 
-  // Carrega a chave salva (por provedor) assim que a página abre ou o
-  // provedor selecionado muda — cada chave fica isolada no localStorage
-  // deste navegador, nunca é enviada a lugar nenhum além da nossa própria
-  // API de extração.
   useEffect(() => {
     const chaveKey = provider === "openrouter" ? CHAVE_OPENROUTER_LOCAL : CHAVE_ANTHROPIC_LOCAL;
     setApiKey(window.localStorage.getItem(chaveKey) ?? "");
@@ -76,7 +80,7 @@ export default function NovoTemplatePage() {
           mimeType: referencia.mimeType,
           provider,
           model: modelo,
-          apiKey: apiKey.trim() || undefined,
+          apiKey: undefined,
         }),
       });
       const data = await res.json();
@@ -105,214 +109,184 @@ export default function NovoTemplatePage() {
       variaveisImagem,
       categoria: categoria || undefined,
     });
-    router.push("/");
+    router.push("/dashboard");
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <p className="mb-2 text-xs uppercase tracking-[0.2em] text-gold-500/80">
-        Etapa 1 de 1
-      </p>
-      <h1 className="mb-2 font-display text-4xl tracking-wide text-parchment-100">
-        Extrair novo template
-      </h1>
-      <p className="mb-10 max-w-lg text-sm text-parchment-500">
-        Envie um flyer de referência. A identidade visual, o layout e a paleta
-        serão extraídos automaticamente — a pessoa da foto não é copiada, só o
-        estilo.
-      </p>
+    <div className="mx-auto max-w-5xl px-6 py-16 bg-[INK] text-[FG] font-body min-h-screen">
+      <div className="mb-12">
+        <p className="mb-3 text-xs font-black uppercase tracking-[0.3em] text-[GOLD_DARK]">
+          Etapa 1 de 1
+        </p>
+        <h1 className="mb-4 font-display text-5xl tracking-wide text-[FG] sm:text-5xl">
+          Extrair novo template
+        </h1>
+        <p className="max-w-2xl text-lg text-[MUTED] leading-relaxed">
+          Envie um flyer de referência. Nossa IA extrai a identidade visual, o layout e a paleta automaticamente para criar a base do seu design.
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-[220px_1fr]">
-        <UploadDropzone
-          label="Flyer de referência"
-          hint="PNG ou JPG, formato retrato"
-          aspect="portrait"
-          value={referencia}
-          onChange={(v) => {
-            setReferencia(v);
-            setStatus("idle");
-          }}
-        />
-
-        <div className="flex flex-col gap-5">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-parchment-100">
-              Nome do template
-            </label>
-            <input
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Ex: Culto de Domingo — OBPC"
-              className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <div className="sticky top-24">
+            <UploadDropzone
+              label="Flyer de referência"
+              hint="PNG ou JPG, formato retrato"
+              aspect="portrait"
+              value={referencia}
+              onChange={(v) => {
+                setReferencia(v);
+                setStatus("idle");
+              }}
             />
           </div>
+        </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-parchment-100">
-              Categoria do evento (opcional)
-            </label>
-            <select
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value as CategoriaEvento | "")}
-              className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-3 py-2.5 text-sm text-parchment-100 outline-none transition-colors focus:border-gold-400/50"
-            >
-              <option value="">Sem categoria</option>
-              {CATEGORIAS_EVENTO.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nome}
-                </option>
-              ))}
-            </select>
+        <div className="lg:col-span-8 space-y-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[FG]">Nome do template</label>
+              <input
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Ex: Culto de Domingo — OBPC"
+                className="w-full rounded-2xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm font-medium text-[FG] outline-none transition-all focus:border-[#B8860B]/50 focus:ring-4 focus:ring-[GOLD]/20 placeholder:text-[MUTED]/40"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[FG]">Categoria do evento</label>
+              <select
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value as CategoriaEvento | "")}
+                className="w-full rounded-2xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm font-medium text-[FG] outline-none transition-all focus:border-[#B8860B]/50 focus:ring-4 focus:ring-[GOLD]/20"
+              >
+                <option value="">Sem categoria</option>
+                {CATEGORIAS_EVENTO.map((c) => (
+                  <option key={c.id} value={c.id}>{c.nome}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label className="mb-2 flex items-center gap-1.5 text-sm font-medium text-parchment-100">
-              <Sparkles size={14} className="text-gold-400" /> Modelo de IA
+          <div className="p-8 rounded-3xl bg-[SURFACE]/60 border-2 border-[GOLD]/12 shadow-[0_0_20px_rgba(184,134,11,0.1)] space-y-6">
+            <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-[FG]">
+              <Sparkles size={18} className="text-[GOLD_DARK]" /> Configuração de Inteligência
             </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <select
-                value={provider}
-                onChange={(e) => setProvider(e.target.value as Provider)}
-                className="rounded-xl border border-gold-500/15 bg-ink-900/70 px-3 py-2.5 text-sm text-parchment-100 outline-none transition-colors focus:border-gold-400/50"
-              >
-                <option value="openrouter">OpenRouter (grátis)</option>
-                <option value="anthropic">Anthropic Claude (sua chave)</option>
-              </select>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-[MUTED] uppercase">Provedor</span>
+                <select
+                  value={provider}
+                  onChange={(e) => setProvider(e.target.value as Provider)}
+                  className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#B8860B]/50 transition-all"
+                >
+                  <option value="openrouter">OpenRouter (grátis)</option>
+                  <option value="anthropic">Anthropic Claude</option>
+                </select>
+              </div>
 
-              {provider === "openrouter" && (
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-[MUTED] uppercase">Modelo de IA</span>
                 <select
                   value={modelo}
                   onChange={(e) => setModelo(e.target.value)}
-                  className="flex-1 rounded-xl border border-gold-500/15 bg-ink-900/70 px-3 py-2.5 text-sm text-parchment-100 outline-none transition-colors focus:border-gold-400/50"
+                  className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#B8860B]/50 transition-all"
                 >
-                  {modelos.length === 0 && <option value="">Carregando modelos…</option>}
+                  {modelos.length === 0 && <option value="">Carregando modelos...</option>}
                   {modelos.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}
-                    </option>
+                    <option key={m.id} value={m.id}>{m.name}</option>
                   ))}
                 </select>
-              )}
+              </div>
             </div>
-            {provider === "openrouter" && (
-              <p className="mt-1.5 text-xs text-parchment-500">
-                Modelos gratuitos da{" "}
-                <a
-                  href="https://openrouter.ai/keys"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline decoration-dotted hover:text-gold-300"
-                >
-                  OpenRouter
-                </a>
-                . Limite do tier grátis: ~20 req/min e 50/dia.
-              </p>
-            )}
 
-            <div className="mt-3">
-              <label className="mb-1.5 block text-xs font-medium text-parchment-300">
-                Sua chave de API {provider === "openrouter" ? "da OpenRouter" : "da Anthropic"}
-              </label>
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-[MUTED] uppercase">Chave de API</span>
               <input
                 type="password"
                 autoComplete="off"
                 value={apiKey}
                 onChange={(e) => atualizarApiKey(e.target.value)}
                 placeholder={provider === "openrouter" ? "sk-or-v1-..." : "sk-ant-..."}
-                className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-3 py-2.5 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/40 focus:border-gold-400/50"
+                className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-2.5 text-sm font-mono outline-none transition-all focus:border-[#B8860B]/50"
               />
-              <p className="mt-1.5 text-xs text-parchment-500">
-                Fica salva só neste navegador (nunca sai daqui além da nossa
-                própria chamada de extração). Se o projeto já tiver a chave
-                configurada na Vercel, pode deixar em branco.
-              </p>
             </div>
-          </div>
 
-          <motion.button
-            type="button"
-            disabled={!referencia || status === "extraindo"}
-            onClick={extrair}
-            whileHover={{ scale: referencia ? 1.01 : 1 }}
-            whileTap={{ scale: referencia ? 0.98 : 1 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl border border-gold-500/25 bg-gold-500/10 px-5 py-3 text-sm font-medium text-gold-200 transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {status === "extraindo" ? (
-              <>
-                <ScanLine size={16} className="animate-pulse" />
-                Analisando identidade visual…
-              </>
-            ) : (
-              <>
-                <Wand2 size={16} />
-                Extrair identidade visual
-              </>
-            )}
-          </motion.button>
+            <motion.button
+              type="button"
+              disabled={!referencia || status === "extraindo"}
+              onClick={extrair}
+              whileHover={{ scale: referencia ? 1.02 : 1 }}
+              whileTap={{ scale: referencia ? 0.98 : 1 }}
+              className="w-full inline-flex items-center justify-center gap-3 rounded-2xl bg-[GOLD] px-6 py-4 text-sm font-bold text-[INK] transition-all hover:bg-[GOLD_LIGHT] disabled:opacity-30 shadow-[0_0_20px_rgba(184,134,11,0.2)]"
+            >
+              {status === "extraindo" ? (
+                <><ScanLine size={20} className="animate-spin" /> Analisando Identidade Visual...</>
+              ) : (
+                <><Wand2 size={20} /> Extrair Identidade Visual</>
+              )}
+            </motion.button>
+          </div>
 
           <AnimatePresence>
             {erro && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-300"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex items-start gap-3 rounded-2xl border-2 border-[#DC2626]/30 bg-[#DC2626]/5 p-4 text-sm text-[#FCA5A5]"
               >
-                <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-                <span>
-                  {erro} Você também pode colar o prompt manualmente no campo
-                  abaixo.
-                </span>
+                <AlertTriangle size={20} className="mt-0.5 shrink-0" />
+                <span className="font-medium">{erro}</span>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      <div className="mt-10">
-        <label className="mb-2 block text-sm font-medium text-parchment-100">
-          Prompt de criação (editável)
-        </label>
+      <div className="mt-16 space-y-6">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold text-[FG] uppercase tracking-widest">
+            Prompt de Criação (Editável)
+          </label>
+          <div className="h-px flex-1 mx-4 bg-[GOLD]/12" />
+        </div>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          rows={10}
-          placeholder="O prompt extraído aparece aqui — ou cole um prompt já pronto."
-          className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm leading-relaxed text-parchment-200 outline-none transition-colors placeholder:text-parchment-500/50 focus:border-gold-400/50"
+          rows={12}
+          placeholder="A IA preencherá este campo automaticamente após a extração..."
+          className="w-full rounded-3xl border-2 border-[BORDER] bg-[SURFACE]/70 px-6 py-5 text-sm leading-relaxed text-[FG] outline-none transition-all focus:border-[#B8860B]/50 focus:ring-4 focus:ring-[GOLD]/20 placeholder:text-[MUTED]/40 shadow-soft"
         />
 
         {variaveis && (variaveis.variaveisTexto.length > 0 || variaveis.variaveisImagem.length > 0) && (
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {variaveis.variaveisTexto.map((v) => (
-              <span
-                key={v}
-                className="rounded-full border border-gold-500/20 bg-gold-500/5 px-3 py-1 text-xs text-gold-300"
-              >
+              <span key={v} className="rounded-full border-2 border-[GOLD]/20 bg-[SURFACE]/70 px-4 py-1.5 text-xs font-bold text-[MUTED] shadow-soft">
                 {ROTULOS_VARIAVEIS[v] ?? v}
               </span>
             ))}
             {variaveis.variaveisImagem.map((v) => (
-              <span
-                key={v}
-                className="rounded-full border border-parchment-500/20 bg-parchment-500/5 px-3 py-1 text-xs text-parchment-300"
-              >
-                🖼 {v === "FOTO_PRELETOR_ANEXADA" ? "Foto do preletor" : "Logo da igreja"}
+              <span key={v} className="rounded-full border-2 border-[GOLD]/20 bg-[SURFACE]/70 px-4 py-1.5 text-xs font-bold text-[MUTED] shadow-soft">
+                FOTO {v === "FOTO_PRELETOR_ANEXADA" ? "do preletor" : "do logo"}
               </span>
             ))}
           </div>
         )}
 
-        <motion.button
-          type="button"
-          disabled={!nome.trim() || !prompt.trim()}
-          onClick={salvar}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-700 px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow disabled:cursor-not-allowed disabled:opacity-30"
-        >
-          <Save size={16} /> Salvar template
-        </motion.button>
+        <div className="flex justify-end pt-6">
+          <motion.button
+            type="button"
+            disabled={!nome.trim() || !prompt.trim()}
+            onClick={salvar}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-3 rounded-full bg-[GOLD] px-10 py-4 text-sm font-black text-[INK] shadow-[0_0_20px_rgba(184,134,11,0.2)] hover:bg-[GOLD_LIGHT] transition-all disabled:opacity-30 uppercase tracking-widest"
+          >
+            <Save size={20} /> Salvar Template
+          </motion.button>
+        </div>
       </div>
     </div>
   );

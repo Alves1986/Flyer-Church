@@ -10,21 +10,45 @@ export default function Header() {
   const isHistorico = pathname === "/flyers/historico";
   const isBiblioteca = pathname === "/biblioteca";
   const isMarca = pathname === "/marca";
+  const isAnalytics = pathname === "/analytics";
+
+  // Se estiver na Home (Landing Page), não mostra as abas internas do sistema
+  if (isHome) {
+    return (
+      <header className="sticky top-0 z-40 border-b border-gold-500/10 bg-midnight-950/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+          <Link href="/" className="group flex items-center gap-3">
+            <Image
+              src="/brand/mark.svg"
+              alt="Flyer Church"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-lg shadow-glow transition-transform duration-200 group-hover:scale-105"
+              priority
+            />
+            <span className="font-display text-xl tracking-wide text-parchment-100">
+              FLYER<span className="text-gold-400"> CHURCH</span>
+            </span>
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gold-500/10 bg-ink-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-gold-500/10 bg-midnight-950/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
         <Link href="/" className="group flex items-center gap-3">
           <Image
             src="/brand/mark.svg"
-            alt="FlyerForge"
+            alt="Flyer Church"
             width={32}
             height={32}
             className="h-8 w-8 rounded-lg shadow-glow transition-transform duration-200 group-hover:scale-105"
             priority
           />
           <span className="font-display text-xl tracking-wide text-parchment-100">
-            FLYER<span className="text-gold-400">FORGE</span>
+            FLYER<span className="text-gold-400"> CHURCH</span>
           </span>
         </Link>
 
@@ -53,6 +77,14 @@ export default function Header() {
               Histórico
             </Link>
           )}
+          {!isAnalytics && (
+            <Link
+              href="/analytics"
+              className="text-sm text-parchment-500 transition-colors hover:text-gold-300"
+            >
+              Analytics
+            </Link>
+          )}
           {!isHome && (
             <Link
               href="/"
@@ -61,8 +93,8 @@ export default function Header() {
               ← Painel
             </Link>
           )}
-        </div>
-      </div>
+        </div >
+      </div >
     </header>
   );
 }

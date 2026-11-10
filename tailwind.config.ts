@@ -5,24 +5,52 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: {
+        brand: {
+          white: "#FCFCFA",
+          cream: "#F7F5F0",
+          stone: "#EAE7E0",
+          ink: "#0A0A0A",
+          gold: {
+            100: "#FDF7D8",
+            200: "#F3E5B5",
+            300: "#EAD9A0",
+            400: "#DCC177",
+            500: "#B8860B",
+            600: "#9A6B08",
+            700: "#7A5506",
+          },
+        },
+        // Tema escuro do app (painel, configurações, geração)
+        midnight: {
           950: "#0B0A08",
           900: "#12100C",
-          800: "#1A160F",
-          700: "#241E14",
+        },
+        ink: {
+          950: "#0A0A0A",
+          900: "#0B0A08",
         },
         gold: {
-          200: "#EAD9A0",
-          300: "#DCC177",
-          400: "#C9A227",
-          500: "#BB9E49",
-          600: "#8C7433",
-          700: "#5F5436",
+          100: "#FDF7D8",
+          200: "#F3E5B5",
+          300: "#EAD9A0",
+          400: "#DCC177",
+          500: "#B8860B",
+          600: "#9A6B08",
+          700: "#7A5506",
         },
         parchment: {
           100: "#F5F0E4",
-          300: "#DCD3BF",
-          500: "#A69C87",
+          200: "#DCD3BF",
+          300: "#A69C87",
+          400: "#8A7F6B",
+          500: "#6B604E",
+        },
+        slate: {
+          50: "#F8FAFC",
+          100: "#F1F5F9",
+          200: "#E2E8F0",
+          600: "#475569",
+          900: "#0F172A",
         },
       },
       fontFamily: {
@@ -30,27 +58,23 @@ const config: Config = {
         body: ["var(--font-body)"],
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(187,158,73,0.18), 0 8px 30px -8px rgba(187,158,73,0.25)",
+        soft: "0 2px 15px -3px rgba(0, 0, 0, 0.05)",
+        premium: "0 20px 50px -12px rgba(0, 0, 0, 0.12)",
+        goldGlow: "0 0 20px rgba(184, 134, 11, 0.2)",
+        sharp: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        glow: "0 0 20px rgba(184, 134, 11, 0.15)",
       },
       backgroundImage: {
-        "gold-arc": "radial-gradient(120% 120% at 100% 0%, rgba(187,158,73,0.16) 0%, rgba(187,158,73,0) 60%)",
-      },
-      keyframes: {
-        scanline: {
-          "0%": { transform: "translateY(-100%)" },
-          "100%": { transform: "translateY(100%)" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
+        "premium-gradient":
+          "radial-gradient(circle at top right, rgba(184, 134, 11, 0.08), transparent 40%)",
       },
       animation: {
-        scanline: "scanline 1.8s cubic-bezier(0.4,0,0.2,1) infinite",
-        shimmer: "shimmer 2.4s linear infinite",
+        "bounce-slow": "bounce 2s infinite ease-in-out",
+        "spin-slow": "spin 2s linear infinite",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

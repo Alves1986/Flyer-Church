@@ -1,4 +1,4 @@
--- Schema de referência para o banco Postgres do FlyerForge.
+-- Schema de referência para o banco Postgres do Flyer Church.
 --
 -- Você NÃO precisa rodar isso manualmente: as rotas em app/api/templates e
 -- app/api/flyers chamam `ensureSchema()` (lib/db.ts) automaticamente, que

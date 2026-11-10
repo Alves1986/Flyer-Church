@@ -32,6 +32,14 @@ interface InviteData {
   emails: string[];
 }
 
+const INK = "#0B0A08";
+const SURFACE = "#12100C";
+const FG = "#F5F0E4";
+const MUTED = "#A69C87";
+const BORDER = "#2A2418";
+const GOLD = "#B8860B";
+const GOLD_DARK = "#9A6B08";
+
 export default function OnboardingClient({ initialUserEmail }: OnboardingClientProps) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
@@ -64,17 +72,14 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     try {
       const res = await fetch("/api/onboarding/org", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(orgData),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Erro ao criar organização");
-
       setStep(2);
     } catch (err) {
       setError((err as Error).message);
@@ -93,10 +98,8 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
       setError("Dê um nome ao template");
       return;
     }
-
     setError(null);
     setLoading(true);
-
     try {
       const extractRes = await fetch("/api/extract", {
         method: "POST",
@@ -109,12 +112,9 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
           apiKey: undefined,
         }),
       });
-
       const extractData = await extractRes.json();
       if (!extractRes.ok) throw new Error(extractData.error ?? "Falha na extração");
-
       const { variaveisTexto, variaveisImagem } = await extractVariables(extractData.prompt);
-
       const saveRes = await fetch("/api/templates", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -129,15 +129,12 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
           thumbnailBase64: templateData.referencia.base64,
         }),
       });
-
       if (!saveRes.ok) {
         const err = await saveRes.json();
         throw new Error(err.error ?? "Erro ao salvar template");
       }
-
       const saved = await saveRes.json();
       setTemplateData((s) => ({ ...s, templateId: saved.template?.id ?? saved.id }));
-
       setStep(3);
     } catch (err) {
       setError((err as Error).message);
@@ -150,9 +147,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     const validEmails = inviteData.emails.filter((e) => e.trim() && e.includes("@"));
-
     try {
       for (const email of validEmails) {
         await fetch("/api/onboarding/invite", {
@@ -161,7 +156,6 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
           body: JSON.stringify({ email: email.trim(), role: "designer" }),
         });
       }
-
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
@@ -200,10 +194,15 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
   return (
     <div className="mx-auto max-w-2xl py-12 px-4">
       <div className="mb-10 text-center">
-        <h1 className="font-display text-3xl tracking-wide text-parchment-100">Bem-vindo ao FlyerForge</h1>
-        <p className="mt-2 text-parchment-500">Vamos configurar sua igreja em 3 passos rápidos</p>
+        <h1 className="font-display text-3xl tracking-wide text-[FG]">
+          Bem-vindo ao Flyer Church
+        </h1>
+        <p className="mt-2 text-[MUTED]">
+          Vamos configurar sua igreja em 3 passos rápidos
+        </p>
       </div>
 
+      {/* Progress steps */}
       <div className="mb-8 flex items-center justify-center gap-2">
         {steps.map((s, i) => (
           <motion.div
@@ -216,10 +215,10 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 s.number < step
-                  ? "bg-emerald-500 text-ink-950"
+                  ? "bg-[#16A34A] text-[#0B0A08]"
                   : s.number === step
-                  ? "bg-gold-500 text-ink-950"
-                  : "bg-ink-900/50 border border-gold-500/20 text-parchment-400"
+                    ? "bg-[#B8860B] text-[#0B0A08]"
+                    : "bg-[#12100C]/50 border border-[#B8860B]/20 text-[#A69C87]"
               }`}
             >
               {s.number < step ? <Check className="h-5 w-5" /> : s.icon}
@@ -227,7 +226,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
             {i < steps.length - 1 && (
               <motion.div
                 className={`h-1 w-16 rounded transition-colors ${
-                  s.number < step ? "bg-emerald-500" : "bg-gold-500/20"
+                  s.number < step ? "bg-[#16A34A]" : "bg-[#B8860B]/20"
                 }`}
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: s.number < step ? 1 : 0 }}
@@ -243,7 +242,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-6 flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-300"
+            className="mb-6 flex items-start gap-2 rounded-xl border border-[#B8860B]/20 bg-[#B8860B]/5 p-3 text-xs text-[#DCC177]"
           >
             <AlertCircle size={14} className="mt-0.5 shrink-0" />
             <span>{error}</span>
@@ -252,6 +251,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
       </AnimatePresence>
 
       <AnimatePresence mode="wait">
+        {/* STEP 1 — Dados da igreja */}
         {step === 1 && (
           <motion.form
             key="step1"
@@ -262,50 +262,62 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
             transition={{ duration: 0.2 }}
             className="space-y-6"
           >
-            <h2 className="font-display text-xl text-parchment-100">1. Dados da igreja</h2>
+            <h2 className="font-display text-xl text-[FG]">
+              1. Dados da igreja
+            </h2>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-parchment-100">Nome da igreja</label>
+              <label className="mb-2 block text-sm font-medium text-[FG]">
+                Nome da igreja
+              </label>
               <input
                 value={orgData.name}
                 onChange={(e) => setOrgData((s) => ({ ...s, name: e.target.value }))}
                 placeholder="Ex: Igreja Batista Central"
-                className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+                className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors placeholder:text-[MUTED]/60 focus:border-[#B8860B]/50"
                 required
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-parchment-100">Slug (URL personalizada)</label>
+              <label className="mb-2 block text-sm font-medium text-[FG]">
+                Slug (URL personalizada)
+              </label>
               <div className="flex items-center gap-2">
-                <span className="text-parchment-500">flyerforge.app/</span>
+                <span className="text-[MUTED]">flyerforge.app/</span>
                 <input
                   value={orgData.slug}
                   onChange={(e) => setOrgData((s) => ({ ...s, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") }))}
                   placeholder="igreja-central"
-                  className="flex-1 rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+                  className="flex-1 rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors placeholder:text-[MUTED]/60 focus:border-[#B8860B]/50"
                   required
                 />
               </div>
-              <p className="mt-1 text-xs text-parchment-500">Apenas letras minúsculas, números e hífens</p>
+              <p className="mt-1 text-xs text-[MUTED]">
+                Apenas letras minúsculas, números e hífens
+              </p>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-parchment-100">Denominação (opcional)</label>
+              <label className="mb-2 block text-sm font-medium text-[FG]">
+                Denominação (opcional)
+              </label>
               <input
                 value={orgData.denomination}
                 onChange={(e) => setOrgData((s) => ({ ...s, denomination: e.target.value }))}
                 placeholder="Ex: Batista, Presbiteriana, Assembleia de Deus"
-                className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+                className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors placeholder:text-[MUTED]/60 focus:border-[#B8860B]/50"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-parchment-100">Tamanho da equipe de mídia</label>
+              <label className="mb-2 block text-sm font-medium text-[FG]">
+                Tamanho da equipe de mídia
+              </label>
               <select
                 value={orgData.teamSize}
                 onChange={(e) => setOrgData((s) => ({ ...s, teamSize: e.target.value }))}
-                className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors focus:border-gold-400/50"
+                className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors focus:border-[#B8860B]/50"
               >
                 <option value="1-5">1 a 5 pessoas</option>
                 <option value="6-15">6 a 15 pessoas</option>
@@ -319,7 +331,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
               disabled={!canProceedStep1 || loading}
               whileHover={{ scale: canProceedStep1 ? 1.01 : 1 }}
               whileTap={{ scale: canProceedStep1 ? 0.98 : 1 }}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-700 px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow disabled:cursor-not-allowed disabled:opacity-40"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[GOLD] px-6 py-3 text-sm font-bold text-[INK] shadow-[0_0_20px_rgba(184,134,11,0.2)] disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#DCC177] transition-all"
             >
               {loading ? (
                 <>
@@ -336,6 +348,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
           </motion.form>
         )}
 
+        {/* STEP 2 — Primeiro template */}
         {step === 2 && (
           <motion.form
             key="step2"
@@ -346,8 +359,10 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
             transition={{ duration: 0.2 }}
             className="space-y-6"
           >
-            <h2 className="font-display text-xl text-parchment-100">2. Primeiro template</h2>
-            <p className="text-parchment-500">
+            <h2 className="font-display text-xl text-[FG]">
+              2. Primeiro template
+            </h2>
+            <p className="text-[MUTED]">
               Envie um flyer de referência. Extrairemos a identidade visual automaticamente.
             </p>
 
@@ -362,21 +377,25 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-parchment-100">Nome do template</label>
+                  <label className="mb-2 block text-sm font-medium text-[FG]">
+                    Nome do template
+                  </label>
                   <input
                     value={templateData.nome}
                     onChange={(e) => setTemplateData((s) => ({ ...s, nome: e.target.value }))}
                     placeholder="Ex: Culto de Domingo — Matriz"
-                    className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+                    className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors placeholder:text-[MUTED]/60 focus:border-[#B8860B]/50"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-parchment-100">Categoria do evento</label>
+                  <label className="mb-2 block text-sm font-medium text-[FG]">
+                    Categoria do evento
+                  </label>
                   <select
                     value={templateData.categoria}
                     onChange={(e) => setTemplateData((s) => ({ ...s, categoria: e.target.value as CategoriaEvento | "" }))}
-                    className="w-full rounded-xl border border-gold-500/15 bg-ink-900/70 px-3 py-2.5 text-sm text-parchment-100 outline-none transition-colors focus:border-gold-400/50"
+                    className="w-full rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-3 py-2.5 text-sm text-[FG] outline-none transition-colors focus:border-[#B8860B]/50"
                   >
                     <option value="">Sem categoria</option>
                     {CATEGORIAS_EVENTO.map((c) => (
@@ -395,7 +414,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
                 onClick={goBack}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-gold-500/20 bg-gold-500/10 px-4 py-3 text-sm font-medium text-gold-200"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border-2 border-[BORDER] bg-[SURFACE] px-4 py-3 text-sm font-medium text-[MUTED] hover:border-[#B8860B] hover:text-[GOLD_DARK] transition-all"
               >
                 <ArrowLeft className="h-5 w-5" />
                 Voltar
@@ -406,7 +425,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
                 disabled={!canProceedStep2 || loading}
                 whileHover={{ scale: canProceedStep2 ? 1.01 : 1 }}
                 whileTap={{ scale: canProceedStep2 ? 0.98 : 1 }}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-700 px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[GOLD] px-6 py-3 text-sm font-bold text-[INK] shadow-[0_0_20px_rgba(184,134,11,0.2)] disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#DCC177] transition-all"
               >
                 {loading ? (
                   <>
@@ -424,6 +443,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
           </motion.form>
         )}
 
+        {/* STEP 3 — Convidar equipe */}
         {step === 3 && (
           <motion.form
             key="step3"
@@ -434,9 +454,11 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
             transition={{ duration: 0.2 }}
             className="space-y-6"
           >
-            <h2 className="font-display text-xl text-parchment-100">3. Convidar equipe (opcional)</h2>
-            <p className="text-parchment-500">
-              Adicione membros da equipe de mídia. Eles receberão um email para acessar o FlyerForge.
+            <h2 className="font-display text-xl text-[FG]">
+              3. Convidar equipe (opcional)
+            </h2>
+            <p className="text-[MUTED]">
+              Adicione membros da equipe de mídia. Eles receberão um email para acessar o Flyer Church.
             </p>
 
             <div className="space-y-3">
@@ -447,13 +469,13 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
                     onChange={(e) => updateEmail(index, e.target.value)}
                     placeholder={index === 0 ? "seu@email.com" : "outro@email.com"}
                     type="email"
-                    className="flex-1 rounded-xl border border-gold-500/15 bg-ink-900/70 px-4 py-3 text-sm text-parchment-100 outline-none transition-colors placeholder:text-parchment-500/60 focus:border-gold-400/50"
+                    className="flex-1 rounded-xl border-2 border-[BORDER] bg-[SURFACE]/70 px-4 py-3 text-sm text-[FG] outline-none transition-colors placeholder:text-[MUTED]/60 focus:border-[#B8860B]/50"
                   />
                   {inviteData.emails.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeEmail(index)}
-                      className="p-2 rounded-lg text-parchment-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                      className="p-2 rounded-lg text-[MUTED] hover:text-[#DC2626] hover:bg-[#DC2626]/10 transition-colors"
                       title="Remover"
                     >
                       <X className="h-5 w-5" />
@@ -466,14 +488,16 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
                 <button
                   type="button"
                   onClick={addEmail}
-                  className="w-full py-2 text-sm text-parchment-400 hover:text-gold-300"
+                  className="w-full py-2 text-sm text-[MUTED] hover:text-[#B8860B]"
                 >
                   + Adicionar outro membro
                 </button>
               )}
             </div>
 
-            <p className="text-xs text-parchment-500">Role padrão: Designer (pode criar/editar templates e flyers)</p>
+            <p className="text-xs text-[MUTED]">
+              Role padrão: Designer (pode criar/editar templates e flyers)
+            </p>
 
             <div className="flex gap-3">
               <motion.button
@@ -481,7 +505,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
                 onClick={goBack}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-gold-500/20 bg-gold-500/10 px-4 py-3 text-sm font-medium text-gold-200"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border-2 border-[BORDER] bg-[SURFACE] px-4 py-3 text-sm font-medium text-[MUTED] hover:border-[#B8860B] hover:text-[GOLD_DARK] transition-all"
               >
                 <ArrowLeft className="h-5 w-5" />
                 Voltar
@@ -492,7 +516,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
                 disabled={loading}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-700 px-6 py-3 text-sm font-semibold text-ink-950 shadow-glow"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[GOLD] px-6 py-3 text-sm font-bold text-[INK] shadow-[0_0_20px_rgba(184,134,11,0.2)] disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#DCC177] transition-all"
               >
                 {loading ? (
                   <>
@@ -508,7 +532,7 @@ export default function OnboardingClient({ initialUserEmail }: OnboardingClientP
               </motion.button>
             </div>
 
-            <p className="text-center text-xs text-parchment-500">
+            <p className="text-center text-xs text-[MUTED]">
               Pode pular e convidar depois em <span className="underline">Configurações → Equipe</span>
             </p>
           </motion.form>

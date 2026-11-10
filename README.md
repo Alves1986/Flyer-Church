@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="public/brand/logo-horizontal.png" alt="FlyerForge" width="420" />
+  <img src="public/brand/logo-horizontal.png" alt="Flyer Church" width="420" />
 </p>
 
-# FlyerForge
+# Flyer Church
 
 Gerador de flyers a partir de um flyer de referência: extrai a identidade
 visual uma vez (estilo, paleta, layout, tipografia) e reaproveita esse
